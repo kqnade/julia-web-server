@@ -30,7 +30,11 @@ func Iterate(z0, c complex128, maxIter int, escapeRadius float64) (escaped bool,
 		zi := imag(z)
 		mag2 := zr*zr + zi*zi
 
-		if mag2 > er2 {
+		// !(mag2 <= er2) catches both mag2 > er2 and NaN (from Inf-Inf overflow)
+		if !(mag2 <= er2) {
+			if math.IsNaN(mag2) || math.IsInf(mag2, 0) {
+				return true, 0
+			}
 			// Smooth coloring: iteration + 1 - log(log(|z|)) / log(2)
 			logMag := math.Log(mag2) / 2.0 // log(|z|) = log(mag2)/2
 			smooth = float64(i) + 1.0 - math.Log(logMag)/math.Log(2.0)

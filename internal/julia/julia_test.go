@@ -82,6 +82,14 @@ func TestIterate(t *testing.T) {
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  true,
 		},
+		{
+			name:         "overflow to NaN is treated as escaped not interior",
+			z0:           1e155 + 1e155i,
+			c:            0,
+			maxIter:      256,
+			escapeRadius: DefaultEscapeRadius,
+			wantEscaped:  true,
+		},
 	}
 
 	for _, tt := range tests {
