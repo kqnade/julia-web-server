@@ -12,7 +12,6 @@ func TestIterate(t *testing.T) {
 		maxIter      int
 		escapeRadius float64
 		wantEscaped  bool
-		wantSmooth   float64 // exact match only for -1.0 sentinel
 	}{
 		{
 			name:         "origin with zero c does not escape",
@@ -21,7 +20,6 @@ func TestIterate(t *testing.T) {
 			maxIter:      256,
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  false,
-			wantSmooth:   -1.0,
 		},
 		{
 			name:         "large z escapes immediately",
@@ -38,7 +36,6 @@ func TestIterate(t *testing.T) {
 			maxIter:      256,
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  false,
-			wantSmooth:   -1.0,
 		},
 		{
 			name:         "just outside escape radius escapes",
@@ -55,7 +52,6 @@ func TestIterate(t *testing.T) {
 			maxIter:      256,
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  false,
-			wantSmooth:   -1.0,
 		},
 		{
 			name:         "escaped point has non-negative smooth value",
@@ -72,7 +68,6 @@ func TestIterate(t *testing.T) {
 			maxIter:      256,
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  false,
-			wantSmooth:   -1.0,
 		},
 		{
 			name:         "boundary just inside escape radius with c=0 escapes after iterations",
@@ -109,12 +104,12 @@ func TestIterate(t *testing.T) {
 			}
 
 			if escaped {
-				if smooth < 0 {
-					t.Errorf("escaped point should have smooth >= 0, got %f", smooth)
+				if smooth < 0 || math.IsNaN(smooth) || math.IsInf(smooth, 0) {
+					t.Errorf("smooth = %v, want finite non-negative value", smooth)
 				}
 			} else {
-				if smooth != tt.wantSmooth {
-					t.Errorf("smooth = %f, want %f", smooth, tt.wantSmooth)
+				if smooth != -1.0 {
+					t.Errorf("smooth = %f, want -1.0 (interior sentinel)", smooth)
 				}
 			}
 		})
@@ -123,12 +118,10 @@ func TestIterate(t *testing.T) {
 
 func TestPixelToComplex(t *testing.T) {
 	p := Params{
-		MinX:   -2,
-		MaxX:   2,
-		MinY:   -1.5,
-		MaxY:   1.5,
-		Width:  100,
-		Height: 100,
+		MinX: -2,
+		MaxX: 2,
+		MinY: -1.5,
+		MaxY: 1.5,
 	}
 
 	tests := []struct {

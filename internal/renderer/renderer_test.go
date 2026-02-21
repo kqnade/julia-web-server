@@ -20,12 +20,24 @@ func defaultParams(width, height int) julia.Params {
 	}
 }
 
-func TestRender_BufferSize(t *testing.T) {
-	p := defaultParams(100, 80)
-	buf := Render(p)
-	want := 100 * 80
-	if len(buf) != want {
-		t.Errorf("buffer length = %d, want %d", len(buf), want)
+func TestRender_BufferLength(t *testing.T) {
+	tests := []struct {
+		name   string
+		width  int
+		height int
+	}{
+		{"normal rectangle", 100, 80},
+		{"1x1 minimum", 1, 1},
+		{"non-square wide", 200, 50},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := Render(defaultParams(tt.width, tt.height))
+			want := tt.width * tt.height
+			if len(buf) != want {
+				t.Errorf("Render(%d, %d): len = %d, want %d", tt.width, tt.height, len(buf), want)
+			}
+		})
 	}
 }
 
@@ -45,8 +57,7 @@ func TestRender_AllEscaping(t *testing.T) {
 	buf := Render(p)
 	for i, v := range buf {
 		if v < 0 {
-			t.Errorf("buf[%d] = %f, want >= 0 (all points should escape)", i, v)
-			break
+			t.Fatalf("buf[%d] = %f, want >= 0 (all points should escape)", i, v)
 		}
 	}
 }
@@ -67,8 +78,7 @@ func TestRender_InteriorPoints(t *testing.T) {
 	buf := Render(p)
 	for i, v := range buf {
 		if v != -1.0 {
-			t.Errorf("buf[%d] = %f, want -1.0 (interior points)", i, v)
-			break
+			t.Fatalf("buf[%d] = %f, want -1.0 (interior points)", i, v)
 		}
 	}
 }
@@ -84,25 +94,7 @@ func TestRender_Deterministic(t *testing.T) {
 	for i := range buf1 {
 		if buf1[i] != buf2[i] {
 			t.Errorf("buf[%d] differs: %f vs %f", i, buf1[i], buf2[i])
-			break
 		}
-	}
-}
-
-func TestRender_1x1(t *testing.T) {
-	p := defaultParams(1, 1)
-	buf := Render(p)
-	if len(buf) != 1 {
-		t.Errorf("buffer length = %d, want 1", len(buf))
-	}
-}
-
-func TestRender_NonSquare(t *testing.T) {
-	p := defaultParams(200, 50)
-	buf := Render(p)
-	want := 200 * 50
-	if len(buf) != want {
-		t.Errorf("buffer length = %d, want %d", len(buf), want)
 	}
 }
 
