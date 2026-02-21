@@ -12,6 +12,10 @@ import (
 // top-to-bottom). Each value is the smooth iteration count (>= 0 for escaped
 // points, -1.0 for interior points).
 func Render(p julia.Params) []float32 {
+	if p.Width <= 0 || p.Height <= 0 {
+		return []float32{}
+	}
+
 	buf := make([]float32, p.Width*p.Height)
 
 	numWorkers := runtime.NumCPU()

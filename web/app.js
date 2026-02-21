@@ -113,13 +113,18 @@
       }
     }
 
-    Promise.all(fetches)
-      .catch(function (err) {
-        errorEl.textContent = err.message;
-      })
-      .then(function () {
-        btn.disabled = false;
+    Promise.allSettled(fetches).then(function (results) {
+      var errors = [];
+      results.forEach(function (result) {
+        if (result.status === "rejected") {
+          errors.push(result.reason.message);
+        }
       });
+      if (errors.length > 0) {
+        errorEl.textContent = errors[0];
+      }
+      btn.disabled = false;
+    });
   }
 
   // Convert HSV to RGB. h in [0,360), s and v in [0,1].

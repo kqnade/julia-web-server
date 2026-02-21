@@ -98,10 +98,21 @@ func TestRender_Deterministic(t *testing.T) {
 	}
 }
 
-func TestRender_ZeroHeight_NoPanic(t *testing.T) {
-	p := defaultParams(64, 0)
-	buf := Render(p)
-	if len(buf) != 0 {
-		t.Errorf("buffer length = %d, want 0", len(buf))
+func TestRender_ZeroDimension_NoPanic(t *testing.T) {
+	tests := []struct {
+		name   string
+		width  int
+		height int
+	}{
+		{"zero height", 64, 0},
+		{"zero width", 0, 64},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := Render(defaultParams(tt.width, tt.height))
+			if len(buf) != 0 {
+				t.Errorf("Render(%d, %d): len = %d, want 0", tt.width, tt.height, len(buf))
+			}
+		})
 	}
 }
