@@ -18,6 +18,9 @@ func Render(p julia.Params) []float32 {
 	if numWorkers > p.Height {
 		numWorkers = p.Height
 	}
+	if numWorkers < 1 {
+		numWorkers = 1
+	}
 
 	var wg sync.WaitGroup
 	rowsPerWorker := p.Height / numWorkers

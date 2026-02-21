@@ -21,8 +21,16 @@
     var maxX = parseFloat(val("max_x"));
     var minY = parseFloat(val("min_y"));
     var maxY = parseFloat(val("max_y"));
-    var cReal = val("c_real");
-    var cImag = val("c_imag");
+    var cReal = parseFloat(val("c_real"));
+    var cImag = parseFloat(val("c_imag"));
+
+    if (!Number.isFinite(minX) || !Number.isFinite(maxX) ||
+        !Number.isFinite(minY) || !Number.isFinite(maxY) ||
+        !Number.isFinite(cReal) || !Number.isFinite(cImag)) {
+      errorEl.textContent = "All parameters must be valid finite numbers.";
+      btn.disabled = false;
+      return;
+    }
 
     var canvasW = canvas.width;
     var canvasH = canvas.height;
@@ -63,10 +71,13 @@
 
           var p = fetch(url).then(function (resp) {
             var ct = resp.headers.get("Content-Type") || "";
-            if (ct.indexOf("application/json") !== -1) {
-              return resp.json().then(function (data) {
-                throw new Error(data.error || "Unknown server error");
-              });
+            if (!resp.ok) {
+              if (ct.indexOf("application/json") !== -1) {
+                return resp.json().then(function (data) {
+                  throw new Error(data.error || "Unknown server error");
+                });
+              }
+              throw new Error("Server error: " + resp.status + " " + resp.statusText);
             }
             return resp.arrayBuffer();
           }).then(function (ab) {

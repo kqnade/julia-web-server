@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -46,19 +47,19 @@ func parseParams(q url.Values) (julia.Params, string) {
 
 	// Parse required float parameters
 	minX, err := strconv.ParseFloat(minXStr, 64)
-	if err != nil {
+	if err != nil || math.IsNaN(minX) || math.IsInf(minX, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid min_x: %q is not a valid number", minXStr)
 	}
 	maxX, err := strconv.ParseFloat(maxXStr, 64)
-	if err != nil {
+	if err != nil || math.IsNaN(maxX) || math.IsInf(maxX, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid max_x: %q is not a valid number", maxXStr)
 	}
 	minY, err := strconv.ParseFloat(minYStr, 64)
-	if err != nil {
+	if err != nil || math.IsNaN(minY) || math.IsInf(minY, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid min_y: %q is not a valid number", minYStr)
 	}
 	maxY, err := strconv.ParseFloat(maxYStr, 64)
-	if err != nil {
+	if err != nil || math.IsNaN(maxY) || math.IsInf(maxY, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid max_y: %q is not a valid number", maxYStr)
 	}
 
@@ -68,11 +69,11 @@ func parseParams(q url.Values) (julia.Params, string) {
 		return julia.Params{}, fmt.Sprintf("invalid comp_const: %q must be two comma-separated numbers", compConstStr)
 	}
 	cReal, err := strconv.ParseFloat(strings.TrimSpace(parts[0]), 64)
-	if err != nil {
+	if err != nil || math.IsNaN(cReal) || math.IsInf(cReal, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid comp_const real part: %q is not a valid number", parts[0])
 	}
 	cImag, err := strconv.ParseFloat(strings.TrimSpace(parts[1]), 64)
-	if err != nil {
+	if err != nil || math.IsNaN(cImag) || math.IsInf(cImag, 0) {
 		return julia.Params{}, fmt.Sprintf("invalid comp_const imaginary part: %q is not a valid number", parts[1])
 	}
 

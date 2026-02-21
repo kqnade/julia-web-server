@@ -90,6 +90,14 @@ func TestIterate(t *testing.T) {
 			escapeRadius: DefaultEscapeRadius,
 			wantEscaped:  true,
 		},
+		{
+			name:         "small escape radius with |z|<1 escape gives finite smooth",
+			z0:           0.6 + 0i,
+			c:            0,
+			maxIter:      256,
+			escapeRadius: 0.5, // er2=0.25; z0 escapes immediately with mag2=0.36, |z|<1
+			wantEscaped:  true,
+		},
 	}
 
 	for _, tt := range tests {

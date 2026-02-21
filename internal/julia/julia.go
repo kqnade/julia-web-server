@@ -37,9 +37,16 @@ func Iterate(z0, c complex128, maxIter int, escapeRadius float64) (escaped bool,
 			}
 			// Smooth coloring: iteration + 1 - log(log(|z|)) / log(2)
 			logMag := math.Log(mag2) / 2.0 // log(|z|) = log(mag2)/2
-			smooth = float64(i) + 1.0 - math.Log(logMag)/math.Log(2.0)
-			if smooth < 0 {
-				smooth = 0
+			// logMag must be > 0 (i.e. |z| > 1) for the formula to be valid.
+			// With escapeRadius < 1, a point can escape with |z| <= 1, making
+			// logMag <= 0 and math.Log(logMag) = NaN. Fall back to integer count.
+			if logMag <= 0 {
+				smooth = float64(i)
+			} else {
+				smooth = float64(i) + 1.0 - math.Log(logMag)/math.Log(2.0)
+				if smooth < 0 {
+					smooth = 0
+				}
 			}
 			return true, smooth
 		}
@@ -51,8 +58,11 @@ func Iterate(z0, c complex128, maxIter int, escapeRadius float64) (escaped bool,
 }
 
 // PixelToComplex converts pixel coordinates (px, py) to a complex number
-// based on the given parameters.
+// based on the given parameters. width and height must both be > 0.
 func PixelToComplex(px, py, width, height int, p Params) complex128 {
+	if width <= 0 || height <= 0 {
+		panic("julia: PixelToComplex called with non-positive dimensions")
+	}
 	re := p.MinX + (p.MaxX-p.MinX)*float64(px)/float64(width)
 	im := p.MinY + (p.MaxY-p.MinY)*float64(py)/float64(height)
 	return complex(re, im)

@@ -67,6 +67,12 @@ func TestJuliaAPI_ValidationErrors(t *testing.T) {
 		{"height too low", validQuery + "&height=0"},
 		{"height too high", validQuery + "&height=5000"},
 		{"min_x not a number", "min_x=abc&max_x=2&min_y=-1.5&max_y=1.5&comp_const=-0.7,0.27015"},
+		{"min_x is NaN", "min_x=NaN&max_x=2&min_y=-1.5&max_y=1.5&comp_const=-0.7,0.27015"},
+		{"max_x is Inf", "min_x=-2&max_x=Inf&min_y=-1.5&max_y=1.5&comp_const=-0.7,0.27015"},
+		{"min_y is -Inf", "min_x=-2&max_x=2&min_y=-Inf&max_y=1.5&comp_const=-0.7,0.27015"},
+		{"max_y is NaN", "min_x=-2&max_x=2&min_y=-1.5&max_y=NaN&comp_const=-0.7,0.27015"},
+		{"comp_const real is NaN", "min_x=-2&max_x=2&min_y=-1.5&max_y=1.5&comp_const=NaN,0.27015"},
+		{"comp_const imag is Inf", "min_x=-2&max_x=2&min_y=-1.5&max_y=1.5&comp_const=-0.7,+Inf"},
 	}
 
 	for _, tt := range tests {

@@ -105,3 +105,11 @@ func TestRender_NonSquare(t *testing.T) {
 		t.Errorf("buffer length = %d, want %d", len(buf), want)
 	}
 }
+
+func TestRender_ZeroHeight_NoPanic(t *testing.T) {
+	p := defaultParams(64, 0)
+	buf := Render(p)
+	if len(buf) != 0 {
+		t.Errorf("buffer length = %d, want 0", len(buf))
+	}
+}
