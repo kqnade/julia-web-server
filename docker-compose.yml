@@ -1,0 +1,7 @@
+services:
+  julia-server:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "8080:8080"
