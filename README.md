@@ -15,8 +15,27 @@ go run .
 ### Docker
 
 ```bash
+# ビルド＆起動（docker-compose）
 docker compose up --build
 # Open http://localhost:8080/satori/julia
+```
+
+ビルド済みイメージを直接使う場合：
+
+```bash
+# イメージのビルド
+docker build --target prod -t julia-web-server:prod .
+
+# コンテナの起動
+docker run -p 8080:8080 julia-web-server:prod
+# Open http://localhost:8080/satori/julia
+```
+
+デバッグ用イメージ（curl / telnet 付き）を使う場合：
+
+```bash
+docker build --target debug -t julia-web-server:debug .
+docker run -p 8080:8080 julia-web-server:debug
 ```
 
 ## API
